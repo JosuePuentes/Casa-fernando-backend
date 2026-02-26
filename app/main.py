@@ -44,7 +44,13 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Maneja errores no capturados para devolver JSON con CORS."""
+    """Maneja errores no capturados. Delega HTTPException y ValidationError."""
+    from fastapi import HTTPException
+    from fastapi.exceptions import RequestValidationError
+    if isinstance(exc, HTTPException):
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    if isinstance(exc, RequestValidationError):
+        return JSONResponse(status_code=422, content={"detail": exc.errors()})
     logger.exception("Error no capturado: %s", exc)
     return JSONResponse(
         status_code=500,
