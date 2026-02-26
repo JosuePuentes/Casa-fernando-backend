@@ -9,14 +9,13 @@ if TYPE_CHECKING:
 
 
 class ComandaDetalleCreate(BaseModel):
-    plato_id: int
+    plato_id: str
     cantidad: int = 1
     observaciones: str | None = None
 
 
 class ComandaDetalleResponse(BaseModel):
-    id: int
-    plato_id: int
+    plato_id: str
     plato_nombre: str | None = None
     cantidad: int
     precio_unitario: float
@@ -30,7 +29,7 @@ class ComandaDetalleResponse(BaseModel):
 class ComandaCreate(BaseModel):
     """Crear comanda - requiere datos del cliente. Mesa obligatoria para mesonera y punto de venta."""
     cliente: "ClienteCreate"
-    mesa_id: int | None = None
+    mesa_id: str | None = None
     platos: list[ComandaDetalleCreate]
     forma_pago: FormaPago | None = None
     origen: OrigenComanda
@@ -50,11 +49,11 @@ class ComandaUpdate(BaseModel):
 
 
 class ComandaResponse(BaseModel):
-    id: int
+    id: str
     numero: str
-    mesa_id: int | None = None
+    mesa_id: str | None = None
     mesa_numero: str | None = None
-    cliente_id: int
+    cliente_id: str
     estado: EstadoComanda
     forma_pago: FormaPago | None = None
     origen: OrigenComanda
@@ -73,7 +72,7 @@ class ComandaResponse(BaseModel):
 
 class ComandaFacturacionResponse(BaseModel):
     """Comanda para módulo de facturación."""
-    id: int
+    id: str
     numero: str
     mesa_numero: str | None = None
     cliente_nombre: str

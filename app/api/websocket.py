@@ -29,7 +29,7 @@ async def websocket_mesonera(websocket: WebSocket):
         mesonera_connections.discard(websocket)
 
 
-async def broadcast_notificacion_mesonera(mesa_id: int | None, mensaje: str, notif_id: int):
+async def broadcast_notificacion_mesonera(mesa_id: str | None, mensaje: str, notif_id: str):
     """Enviar notificación a todas las mesoneras conectadas (para vibración)."""
     msg = json.dumps({
         "type": "notificacion_cliente",

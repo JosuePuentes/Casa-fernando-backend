@@ -1,0 +1,18 @@
+# Render Blueprint - Casa Fernando Backend
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: casa-fernando-backend
+    runtime: python
+    region: oregon
+
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+        # Para SQLite (datos no persisten en free tier): dejar vacío o usar default
+        # Para MongoDB: mongodb+srv://usuario:password@cluster0.xxx.mongodb.net/casa_fernando?retryWrites=true&w=majority

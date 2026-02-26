@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "clave-secreta-desarrollo-cambiar-produccion"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480  # 8 horas
-    DATABASE_URL: str = "sqlite+aiosqlite:///./casa_fernando.db"
+    MONGODB_URL: str = "mongodb://localhost:27017/casa_fernando"
 
     class Config:
         env_file = ".env"

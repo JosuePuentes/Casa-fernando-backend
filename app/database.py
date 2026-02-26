@@ -1,43 +1,25 @@
-"""Configuración de base de datos."""
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
+"""Configuración de base de datos MongoDB."""
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
 from app.config import get_settings
 
 settings = get_settings()
-engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=False,
-)
-
-AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False,
-)
-
-
-class Base(DeclarativeBase):
-    """Base para todos los modelos."""
-    pass
-
-
-async def get_db():
-    """Dependencia para obtener sesión de base de datos."""
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
+client: AsyncIOMotorClient | None = None
 
 
 async def init_db():
-    """Inicializar tablas de la base de datos."""
-    from app.models import User, Cliente, Plato, CategoriaPlato, Comanda, ComandaDetalle, Mesa, NotificacionMesonera
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    """Inicializar conexión MongoDB y documentos Beanie."""
+    global client
+    from app.models.user import User
+    from app.models.cliente import Cliente
+    from app.models.plato import Plato, CategoriaPlato
+    from app.models.comanda import Comanda
+    from app.models.mesa import Mesa
+    from app.models.notificacion import NotificacionMesonera
+
+    client = AsyncIOMotorClient(settings.MONGODB_URL)
+    database = client.get_default_database()
+    await init_beanie(
+        database=database,
+        document_models=[User, Cliente, CategoriaPlato, Plato, Mesa, Comanda, NotificacionMesonera],
+    )

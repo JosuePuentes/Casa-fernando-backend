@@ -2,7 +2,7 @@
 from app.models.user import User
 from app.models.cliente import Cliente
 from app.models.plato import Plato, CategoriaPlato
-from app.models.comanda import Comanda, ComandaDetalle, EstadoComanda, FormaPago
+from app.models.comanda import Comanda, ComandaDetalleEmbedded, EstadoComanda, FormaPago, OrigenComanda
 from app.models.mesa import Mesa
 from app.models.notificacion import NotificacionMesonera
 
@@ -12,9 +12,10 @@ __all__ = [
     "Plato",
     "CategoriaPlato",
     "Comanda",
-    "ComandaDetalle",
+    "ComandaDetalleEmbedded",
     "EstadoComanda",
     "FormaPago",
+    "OrigenComanda",
     "Mesa",
     "NotificacionMesonera",
 ]

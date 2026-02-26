@@ -29,7 +29,7 @@ class UserCreate(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: int
+    id: str
     email: str
     nombre: str
     apellido: str

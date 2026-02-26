@@ -13,7 +13,7 @@ class CategoriaPlatoCreate(CategoriaPlatoBase):
 
 
 class CategoriaPlatoResponse(CategoriaPlatoBase):
-    id: int
+    id: str
 
     class Config:
         from_attributes = True
@@ -39,8 +39,8 @@ class PlatoUpdate(BaseModel):
 
 
 class PlatoResponse(PlatoBase):
-    id: int
-    categoria_id: int
+    id: str
+    categoria_id: str
     categoria: CategoriaPlatoResponse | None = None
 
     class Config:
@@ -49,7 +49,7 @@ class PlatoResponse(PlatoBase):
 
 class PlatoMenuResponse(BaseModel):
     """Plato para mostrar en menú del cliente."""
-    id: int
+    id: str
     nombre: str
     descripcion: str | None = None
     precio: float

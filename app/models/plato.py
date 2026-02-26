@@ -1,37 +1,30 @@
-"""Modelos de platos y categorías del menú."""
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from app.database import Base
+"""Modelos de platos y categorías."""
+from beanie import Document
+from pydantic import Field
+from datetime import datetime
+from typing import Optional
 
 
-class CategoriaPlato(Base):
-    """Categorías del menú (Entradas, Platos fuertes, Bebidas, etc.)."""
-    __tablename__ = "categorias_plato"
+class CategoriaPlato(Document):
+    nombre: str
+    descripcion: Optional[str] = None
+    orden: int = 0
+    activo: int = 1
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(100), nullable=False)
-    descripcion = Column(String(255), nullable=True)
-    orden = Column(Integer, default=0)
-    activo = Column(Integer, default=1)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    platos = relationship("Plato", back_populates="categoria")
+    class Settings:
+        name = "categorias_plato"
 
 
-class Plato(Base):
-    """Platos del menú."""
-    __tablename__ = "platos"
+class Plato(Document):
+    categoria_id: str  # ObjectId ref
+    nombre: str
+    descripcion: Optional[str] = None
+    precio: float
+    imagen_url: Optional[str] = None
+    disponible: int = 1
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
 
-    id = Column(Integer, primary_key=True, index=True)
-    categoria_id = Column(Integer, ForeignKey("categorias_plato.id"), nullable=False)
-    nombre = Column(String(150), nullable=False)
-    descripcion = Column(Text, nullable=True)
-    precio = Column(Float, nullable=False)
-    imagen_url = Column(String(500), nullable=True)
-    disponible = Column(Integer, default=1)  # 1=disponible, 0=no disponible
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    categoria = relationship("CategoriaPlato", back_populates="platos")
-    comandas_detalle = relationship("ComandaDetalle", back_populates="plato")
+    class Settings:
+        name = "platos"

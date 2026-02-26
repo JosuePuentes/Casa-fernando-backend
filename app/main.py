@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db
-from app.api import auth, cliente_area, mesonera, pos, facturacion, admin, websocket, comandas
+from app.api import auth, cliente_area, mesonera, pos, facturacion, admin, websocket, comandas, mesas
 
 
 @asynccontextmanager

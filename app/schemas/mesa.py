@@ -20,7 +20,7 @@ class MesaUpdate(BaseModel):
 
 
 class MesaResponse(MesaBase):
-    id: int
+    id: str
     activa: int = 1
 
     class Config:
@@ -29,7 +29,7 @@ class MesaResponse(MesaBase):
 
 class MesaSelectItem(BaseModel):
     """Mesa para selector al crear comanda."""
-    id: int
+    id: str
     numero: str
     capacidad: int
     ubicacion: str | None = None
