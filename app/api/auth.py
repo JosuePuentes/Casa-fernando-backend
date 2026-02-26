@@ -1,11 +1,14 @@
 """API de autenticación."""
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status
+from pymongo.errors import DuplicateKeyError
 from app.models.user import User
 from app.schemas.auth import UserLogin, UserCreate, UserResponse, Token
 from app.core.security import verify_password, get_password_hash, create_access_token
 from app.core.dependencies import get_current_user, RequireAdmin
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/login", response_model=Token)
@@ -36,9 +39,10 @@ async def register(data: UserCreate):
         return UserResponse(id=str(user.id), email=user.email, nombre=user.nombre, apellido=user.apellido, rol=user.rol)
     except HTTPException:
         raise
+    except DuplicateKeyError:
+        raise HTTPException(status_code=400, detail="El email ya está registrado")
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).exception("Error en register: %s", e)
+        logger.exception("Error en register: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -1,5 +1,5 @@
 """Esquemas de autenticación."""
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, AliasChoices, field_validator
 from app.models.user import RolUsuario
 
 
@@ -23,11 +23,18 @@ class UserLogin(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-    nombre: str
-    apellido: str
+    nombre: str = Field(..., validation_alias=AliasChoices("nombre", "firstName", "name"))
+    apellido: str = Field(..., validation_alias=AliasChoices("apellido", "lastName"))
     rol: RolUsuario = RolUsuario.CLIENTE
 
-    model_config = {"extra": "ignore"}
+    model_config = {"extra": "ignore", "populate_by_name": True}
+
+    @field_validator("rol", mode="before")
+    @classmethod
+    def normalize_rol(cls, v):
+        if isinstance(v, str):
+            return v.lower()
+        return v
 
 
 class UserResponse(BaseModel):
