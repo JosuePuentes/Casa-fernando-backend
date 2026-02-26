@@ -1,7 +1,7 @@
 """API Área Cliente - Menú, comandas y notificación mesonera."""
 from fastapi import APIRouter, HTTPException
 from beanie import PydanticObjectId
-from beanie.operators import In, Ne, And
+from beanie.operators import In, NE, And
 from app.models.plato import Plato, CategoriaPlato
 from app.models.cliente import Cliente
 from app.models.comanda import Comanda, ComandaDetalleEmbedded, OrigenComanda, EstadoComanda
@@ -24,7 +24,7 @@ async def get_mesas_disponibles():
     ]
     comandas_activas = await Comanda.find(
         And(
-            Ne(Comanda.mesa_id, None),
+            NE(Comanda.mesa_id, None),
             In(Comanda.estado, estados_ocupada),
         )
     ).to_list()
