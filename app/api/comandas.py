@@ -11,7 +11,7 @@ router = APIRouter(prefix="/comandas", tags=["Comandas"])
 
 
 @router.patch("/{comanda_id}", response_model=ComandaResponse)
-async def actualizar_comanda(comanda_id: str, data: ComandaUpdate, _=Depends(RequireMesoneraOrPOS)):
+async def actualizar_comanda(comanda_id: str, data: ComandaUpdate, _=RequireMesoneraOrPOS):
     comanda = await Comanda.get(PydanticObjectId(comanda_id))
     if not comanda:
         raise HTTPException(404, "Comanda no encontrada")

@@ -9,7 +9,7 @@ router = APIRouter(prefix="/pos", tags=["Punto de Venta"])
 
 
 @router.post("/comanda", response_model=ComandaResponse)
-async def crear_comanda_pos(data: ComandaCreate, user: User = Depends(RequireMesoneraOrPOS)):
+async def crear_comanda_pos(data: ComandaCreate, user: User = RequireMesoneraOrPOS):
     if data.origen != OrigenComanda.PUNTO_VENTA:
         raise HTTPException(400, "Origen debe ser punto_venta")
     from app.api.cliente_area import _crear_comanda

@@ -11,20 +11,20 @@ router = APIRouter(prefix="/admin", tags=["Administración"])
 
 
 @router.get("/categorias", response_model=list[CategoriaPlatoResponse])
-async def listar_categorias(_=Depends(RequireAdmin)):
+async def listar_categorias(_=RequireAdmin):
     cats = await CategoriaPlato.find().sort(CategoriaPlato.orden).to_list()
     return [CategoriaPlatoResponse(id=str(c.id), **c.model_dump(exclude={"id"})) for c in cats]
 
 
 @router.post("/categorias", response_model=CategoriaPlatoResponse)
-async def crear_categoria(data: CategoriaPlatoCreate, _=Depends(RequireAdmin)):
+async def crear_categoria(data: CategoriaPlatoCreate, _=RequireAdmin):
     cat = CategoriaPlato(**data.model_dump())
     await cat.insert()
     return CategoriaPlatoResponse(id=str(cat.id), **cat.model_dump(exclude={"id"}))
 
 
 @router.get("/platos", response_model=list[PlatoResponse])
-async def listar_platos(_=Depends(RequireAdmin)):
+async def listar_platos(_=RequireAdmin):
     platos = await Plato.find().sort(Plato.nombre).to_list()
     cat_map = {}
     for p in platos:
@@ -38,14 +38,14 @@ async def listar_platos(_=Depends(RequireAdmin)):
 
 
 @router.post("/platos", response_model=PlatoResponse)
-async def crear_plato(data: PlatoCreate, _=Depends(RequireAdmin)):
+async def crear_plato(data: PlatoCreate, _=RequireAdmin):
     plato = Plato(**data.model_dump())
     await plato.insert()
     return PlatoResponse(id=str(plato.id), categoria_id=plato.categoria_id, categoria=None, **plato.model_dump(exclude={"id", "categoria_id"}))
 
 
 @router.put("/platos/{plato_id}", response_model=PlatoResponse)
-async def actualizar_plato(plato_id: str, data: PlatoUpdate, _=Depends(RequireAdmin)):
+async def actualizar_plato(plato_id: str, data: PlatoUpdate, _=RequireAdmin):
     plato = await Plato.get(PydanticObjectId(plato_id))
     if not plato:
         raise HTTPException(404, "Plato no encontrado")
@@ -56,7 +56,7 @@ async def actualizar_plato(plato_id: str, data: PlatoUpdate, _=Depends(RequireAd
 
 
 @router.delete("/platos/{plato_id}")
-async def eliminar_plato(plato_id: str, _=Depends(RequireAdmin)):
+async def eliminar_plato(plato_id: str, _=RequireAdmin):
     plato = await Plato.get(PydanticObjectId(plato_id))
     if not plato:
         raise HTTPException(404, "Plato no encontrado")
@@ -65,13 +65,13 @@ async def eliminar_plato(plato_id: str, _=Depends(RequireAdmin)):
 
 
 @router.get("/mesas", response_model=list[MesaResponse])
-async def listar_mesas(_=Depends(RequireAdmin)):
+async def listar_mesas(_=RequireAdmin):
     mesas = await Mesa.find().sort(Mesa.numero).to_list()
     return [MesaResponse(id=str(m.id), activa=m.activa, **m.model_dump(exclude={"id"})) for m in mesas]
 
 
 @router.post("/mesas", response_model=MesaResponse)
-async def crear_mesa(data: MesaCreate, _=Depends(RequireAdmin)):
+async def crear_mesa(data: MesaCreate, _=RequireAdmin):
     if await Mesa.find_one(Mesa.numero == data.numero):
         raise HTTPException(400, f"Ya existe una mesa con número {data.numero}")
     mesa = Mesa(**data.model_dump())
@@ -80,7 +80,7 @@ async def crear_mesa(data: MesaCreate, _=Depends(RequireAdmin)):
 
 
 @router.put("/mesas/{mesa_id}", response_model=MesaResponse)
-async def actualizar_mesa(mesa_id: str, data: MesaUpdate, _=Depends(RequireAdmin)):
+async def actualizar_mesa(mesa_id: str, data: MesaUpdate, _=RequireAdmin):
     mesa = await Mesa.get(PydanticObjectId(mesa_id))
     if not mesa:
         raise HTTPException(404, "Mesa no encontrada")
@@ -91,7 +91,7 @@ async def actualizar_mesa(mesa_id: str, data: MesaUpdate, _=Depends(RequireAdmin
 
 
 @router.delete("/mesas/{mesa_id}")
-async def eliminar_mesa(mesa_id: str, _=Depends(RequireAdmin)):
+async def eliminar_mesa(mesa_id: str, _=RequireAdmin):
     mesa = await Mesa.get(PydanticObjectId(mesa_id))
     if not mesa:
         raise HTTPException(404, "Mesa no encontrada")

@@ -13,13 +13,13 @@ router = APIRouter(prefix="/mesonera", tags=["Mesonera"])
 
 
 @router.get("/notificaciones")
-async def listar_notificaciones_pendientes(user: User = Depends(RequireMesoneraOrPOS)):
+async def listar_notificaciones_pendientes(user: User = RequireMesoneraOrPOS):
     notifs = await NotificacionMesonera.find(NotificacionMesonera.atendida == 0).sort(-NotificacionMesonera.created_at).to_list()
     return [{"id": str(n.id), "mesa_id": n.mesa_id, "mensaje": n.mensaje, "created_at": n.created_at.isoformat() if n.created_at else None} for n in notifs]
 
 
 @router.post("/notificaciones/{notif_id}/atender")
-async def marcar_notificacion_atendida(notif_id: str, user: User = Depends(RequireMesoneraOrPOS)):
+async def marcar_notificacion_atendida(notif_id: str, user: User = RequireMesoneraOrPOS):
     notif = await NotificacionMesonera.get(PydanticObjectId(notif_id))
     if not notif:
         raise HTTPException(404, "Notificación no encontrada")
@@ -29,7 +29,7 @@ async def marcar_notificacion_atendida(notif_id: str, user: User = Depends(Requi
 
 
 @router.post("/comanda", response_model=ComandaResponse)
-async def crear_comanda_mesonera(data: ComandaCreate, user: User = Depends(RequireMesoneraOrPOS)):
+async def crear_comanda_mesonera(data: ComandaCreate, user: User = RequireMesoneraOrPOS):
     if data.origen != OrigenComanda.MESONERA:
         raise HTTPException(400, "Origen debe ser mesonera")
     from app.api.cliente_area import _crear_comanda
@@ -39,7 +39,7 @@ async def crear_comanda_mesonera(data: ComandaCreate, user: User = Depends(Requi
 
 
 @router.get("/comandas", response_model=list[ComandaResponse])
-async def listar_comandas_mesonera(user: User = Depends(RequireMesoneraOrPOS), estado: str | None = None):
+async def listar_comandas_mesonera(user: User = RequireMesoneraOrPOS, estado: str | None = None):
     if estado:
         try:
             comandas = await Comanda.find(Comanda.estado == EstadoComanda(estado)).sort(-Comanda.created_at).to_list()

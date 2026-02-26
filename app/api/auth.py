@@ -36,7 +36,7 @@ async def register(data: UserCreate):
 
 
 @router.post("/register/admin", response_model=UserResponse)
-async def register_admin(data: UserCreate, _: User = Depends(RequireAdmin)):
+async def register_admin(data: UserCreate, _: User = RequireAdmin):
     if await User.find_one(User.email == data.email):
         raise HTTPException(status_code=400, detail="El email ya está registrado")
     user = User(

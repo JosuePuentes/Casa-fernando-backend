@@ -17,7 +17,7 @@ async def buscar_comandas(
     cedula: str | None = Query(None),
     fecha_desde: date | None = Query(None),
     fecha_hasta: date | None = Query(None),
-    _=Depends(RequireMesoneraOrPOS),
+    _=RequireMesoneraOrPOS,
 ):
     comandas = await Comanda.find().sort(-Comanda.created_at).to_list()
     result = []
@@ -51,7 +51,7 @@ async def buscar_comandas(
 
 
 @router.get("/comandas/{comanda_id}")
-async def detalle_comanda_facturacion(comanda_id: str, _=Depends(RequireMesoneraOrPOS)):
+async def detalle_comanda_facturacion(comanda_id: str, _=RequireMesoneraOrPOS):
     comanda = await Comanda.get(PydanticObjectId(comanda_id))
     if not comanda:
         return {"error": "Comanda no encontrada"}

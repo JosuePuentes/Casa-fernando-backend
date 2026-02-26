@@ -8,6 +8,6 @@ router = APIRouter(prefix="/mesas", tags=["Mesas"])
 
 
 @router.get("", response_model=list[MesaSelectItem])
-async def listar_mesas_para_comanda(_=Depends(RequireMesoneraOrPOS)):
+async def listar_mesas_para_comanda(_=RequireMesoneraOrPOS):
     mesas = await Mesa.find(Mesa.activa == 1).sort(Mesa.numero).to_list()
     return [MesaSelectItem(id=str(m.id), numero=m.numero, capacidad=m.capacidad, ubicacion=m.ubicacion) for m in mesas]
