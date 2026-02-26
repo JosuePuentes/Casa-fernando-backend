@@ -13,7 +13,7 @@ from app.api import auth, cliente_area, mesonera, pos, facturacion, admin, webso
 
 logger = logging.getLogger(__name__)
 
-VERCEL_REGEX = re.compile(r"^https://[a-z0-9-]+\.vercel\.app$")
+VERCEL_REGEX = re.compile(r"^https://[a-z0-9.-]+\.vercel\.app$")
 
 
 class AddCORSHeadersMiddleware(BaseHTTPMiddleware):
