@@ -1,6 +1,9 @@
 """Aplicación principal - Casa Fernando Backend."""
 import logging
+import re
 from contextlib import asynccontextmanager
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -10,13 +13,27 @@ from app.api import auth, cliente_area, mesonera, pos, facturacion, admin, webso
 
 logger = logging.getLogger(__name__)
 
+VERCEL_REGEX = re.compile(r"^https://[a-z0-9-]+\.vercel\.app$")
+
+
+class AddCORSHeadersMiddleware(BaseHTTPMiddleware):
+    """Añade CORS headers a TODAS las respuestas para evitar bloqueos."""
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        origin = request.headers.get("origin")
+        if origin and (origin in ("http://localhost:3000", "https://casa-fernando-frontend.vercel.app") or VERCEL_REGEX.match(origin)):
+            response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        return response
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Inicializar BD al arrancar."""
     await init_db()
     yield
-    # cleanup si fuera necesario
 
 
 app = FastAPI(
@@ -32,10 +49,12 @@ if not _cors_origins:
     _cors_origins = ["http://localhost:3000", "https://casa-fernando-frontend.vercel.app"]
 if "https://casa-fernando-frontend.vercel.app" not in _cors_origins:
     _cors_origins.append("https://casa-fernando-frontend.vercel.app")
+
+app.add_middleware(AddCORSHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",  # Preview deployments de Vercel
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -71,7 +90,6 @@ app.include_router(mesas.router, prefix="/api")
 
 
 @app.get("/")
-async def root():
     return {
         "app": "Casa Fernando Backend",
         "docs": "/docs",

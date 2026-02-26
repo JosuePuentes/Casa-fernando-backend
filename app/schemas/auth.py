@@ -27,6 +27,8 @@ class UserCreate(BaseModel):
     apellido: str
     rol: RolUsuario = RolUsuario.CLIENTE
 
+    model_config = {"extra": "ignore"}
+
 
 class UserResponse(BaseModel):
     id: str

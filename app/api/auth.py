@@ -22,17 +22,24 @@ async def login(data: UserLogin):
 
 @router.post("/register", response_model=UserResponse)
 async def register(data: UserCreate):
-    if await User.find_one(User.email == data.email):
-        raise HTTPException(status_code=400, detail="El email ya está registrado")
-    user = User(
-        email=data.email,
-        hashed_password=get_password_hash(data.password),
-        nombre=data.nombre,
-        apellido=data.apellido,
-        rol=data.rol,
-    )
-    await user.insert()
-    return UserResponse(id=str(user.id), email=user.email, nombre=user.nombre, apellido=user.apellido, rol=user.rol)
+    try:
+        if await User.find_one(User.email == data.email):
+            raise HTTPException(status_code=400, detail="El email ya está registrado")
+        user = User(
+            email=data.email,
+            hashed_password=get_password_hash(data.password),
+            nombre=data.nombre,
+            apellido=data.apellido,
+            rol=data.rol,
+        )
+        await user.insert()
+        return UserResponse(id=str(user.id), email=user.email, nombre=user.nombre, apellido=user.apellido, rol=user.rol)
+    except HTTPException:
+        raise
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).exception("Error en register: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/register/admin", response_model=UserResponse)
