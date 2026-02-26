@@ -4,8 +4,11 @@
 
 | NAME | VALUE |
 |------|-------|
+| `PYTHON_VERSION` | `3.12.0` |
 | `SECRET_KEY` | `casa-fernando-clave-secreta-produccion-2024` |
 | `MONGODB_URL` | `mongodb+srv://casafernando1:TU_PASSWORD@cluster0.3u0u9w0.mongodb.net/casa_fernando?retryWrites=true&w=majority` |
+
+**Importante:** `PYTHON_VERSION=3.12.0` evita que Render use Python 3.14 (que causa fallos con pydantic).
 
 ## Configuración del formulario
 
