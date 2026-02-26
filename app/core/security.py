@@ -1,4 +1,5 @@
 """Seguridad y autenticación."""
+import hashlib
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -8,12 +9,20 @@ settings = get_settings()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+def _normalize_for_bcrypt(password: str) -> str:
+    """Bcrypt limita a 72 bytes. Si es más largo, pre-hasheamos con SHA256."""
+    pw_bytes = password.encode("utf-8")
+    if len(pw_bytes) > 72:
+        return hashlib.sha256(pw_bytes).hexdigest()
+    return password
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return pwd_context.verify(_normalize_for_bcrypt(plain_password), hashed_password)
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    return pwd_context.hash(_normalize_for_bcrypt(password))
 
 
 def create_access_token(data: dict) -> str:
