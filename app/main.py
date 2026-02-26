@@ -90,6 +90,7 @@ app.include_router(mesas.router, prefix="/api")
 
 
 @app.get("/")
+async def root():
     return {
         "app": "Casa Fernando Backend",
         "docs": "/docs",
