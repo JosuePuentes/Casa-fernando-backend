@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480  # 8 horas
     MONGODB_URL: str = "mongodb://localhost:27017/casa_fernando"
+    CORS_ORIGINS: str = "http://localhost:3000"  # Separar por coma. En prod: https://tu-app.vercel.app
 
     class Config:
         env_file = ".env"

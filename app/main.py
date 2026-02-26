@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db
+from app.config import get_settings
 from app.api import auth, cliente_area, mesonera, pos, facturacion, admin, websocket, comandas, mesas
 
 
@@ -21,9 +22,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+_settings = get_settings()
+_cors_origins = [_o.strip() for _o in _settings.CORS_ORIGINS.split(",") if _o.strip()]
+if not _cors_origins:
+    _cors_origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

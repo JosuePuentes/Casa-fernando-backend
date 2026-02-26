@@ -10,6 +10,7 @@ class RolUsuario(str, enum.Enum):
     ADMIN = "admin"
     MESONERA = "mesonera"
     PUNTO_VENTA = "punto_venta"
+    COCINERO = "cocinero"
     CLIENTE = "cliente"
 
 

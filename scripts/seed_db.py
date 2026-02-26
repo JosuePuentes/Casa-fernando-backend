@@ -49,6 +49,17 @@ async def seed():
         await pos_user.insert()
         print("POS creado: pos@casafernando.com / pos123")
 
+    if not await User.find_one(User.email == "cocinero@casafernando.com"):
+        cocinero = User(
+            email="cocinero@casafernando.com",
+            hashed_password=get_password_hash("cocinero123"),
+            nombre="Pedro",
+            apellido="Cocina",
+            rol=RolUsuario.COCINERO,
+        )
+        await cocinero.insert()
+        print("Cocinero creado: cocinero@casafernando.com / cocinero123")
+
     categorias_data = [
         ("Entradas", "Entradas y aperitivos", 1),
         ("Platos Fuertes", "Platos principales", 2),
