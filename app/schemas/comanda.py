@@ -1,11 +1,8 @@
 """Esquemas de comandas."""
 from pydantic import BaseModel, model_validator
 from datetime import datetime
-from typing import TYPE_CHECKING
 from app.models.comanda import EstadoComanda, FormaPago, OrigenComanda
-
-if TYPE_CHECKING:
-    from app.schemas.cliente import ClienteCreate
+from app.schemas.cliente import ClienteCreate
 
 
 class ComandaDetalleCreate(BaseModel):
@@ -28,7 +25,7 @@ class ComandaDetalleResponse(BaseModel):
 
 class ComandaCreate(BaseModel):
     """Crear comanda - requiere datos del cliente. Mesa obligatoria para mesonera y punto de venta."""
-    cliente: "ClienteCreate"
+    cliente: ClienteCreate
     mesa_id: str | None = None
     platos: list[ComandaDetalleCreate]
     forma_pago: FormaPago | None = None
